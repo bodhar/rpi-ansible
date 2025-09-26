@@ -82,21 +82,94 @@ sudo ansible-playbook local.yml --tags firewall
 sudo ansible-playbook local.yml --skip-tags firewall
 ```
 
-The playbook will self-discover its settings, then idempotently configure the
-Raspberry Pi.
+## Testing the playbook
+
+You can test the playbook syntax without making changes:
+
+```bash
+# Check syntax
+ansible-playbook --syntax-check local.yml
+
+# Dry run (check mode)
+sudo ansible-playbook --check local.yml
+
+# Run specific tasks only
+sudo ansible-playbook local.yml --list-tags
+sudo ansible-playbook local.yml --tags facts,software
+```
+
+## Modern Features
+
+This updated version includes:
+
+- **Modern Ansible syntax**: Uses current YAML formatting and module parameters
+- **Collection dependencies**: Automatically installs required Ansible collections
+- **Improved error handling**: Better validation and failure messages
+- **Handlers**: Automatic service restarts and system reboots when needed
+- **Modular configuration**: Defaults, variables, and tasks properly separated
+- **Better tagging**: Fine-grained control over which parts run
+- **Security improvements**: Modern package management and SSH hardening
+
+## Project Structure
+
+```
+.
+├── ansible.cfg              # Ansible configuration
+├── requirements.yml         # Required collections
+├── local.yml               # Main playbook
+├── hosts                   # Inventory file
+└── roles/
+    └── common/
+        ├── defaults/       # Default variables
+        ├── vars/          # Role variables  
+        ├── tasks/         # Task files
+        ├── handlers/      # Event handlers
+        └── meta/         # Role metadata
+```
 
 ## After running the playbook
 
 This playbook purposely requires a few manual steps _after_ running the playbook
 to ensure that it does not lock you out of your Raspberry Pi.
 
-1. While logged in as pi, `sudo passwd glock` (or whatever username you created)
-   to set a password for that user.  This is _not_ required to log in as that
-   user, but it _is_ required to `sudo` as that user.  You may also choose to
+1. While logged in as pi, `sudo passwd <username>` (where username is the user you created)
+   to set a password for that user. This is _not_ required to log in as that
+   user with SSH keys, but it _is_ required to `sudo` as that user. You may also choose to
    set a password for the pi and/or root users.
 
-2. `usermod --lock pi` to ensure that the default user is completely disabled.
+2. `sudo usermod --lock pi` to ensure that the default user is completely disabled.
+   **Warning**: Only do this after confirming you can log in with your new user account!
+
+## Troubleshooting
+
+### Common Issues
+
+- **MAC address not found**: Add your Pi's MAC address to `roles/common/vars/main.yml`
+- **Permission denied**: Make sure to run with `sudo` for system configuration
+- **Collections not found**: Run `ansible-galaxy collection install -r requirements.yml`
+- **SSH connection issues**: Verify the pi user SSH restrictions in `/etc/ssh/sshd_config`
+
+### Debug mode
+
+Run in verbose mode for troubleshooting:
+
+```bash
+sudo ansible-playbook local.yml -v     # verbose
+sudo ansible-playbook local.yml -vv    # more verbose
+sudo ansible-playbook local.yml -vvv   # debug level
+```
+
+### Validation
+
+Use the validation playbook to check system compatibility:
+
+```bash
+ansible-playbook validate.yml
+```
 
 ## Acknowledgment
 
 I stole a lot of knowledge from https://github.com/giuaig/ansible-raspi-config/.
+
+Original work by Glenn K. Lockwood, October 2018.  
+Modernized for current Ansible best practices.

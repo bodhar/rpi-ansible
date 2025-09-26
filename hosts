@@ -1,1 +1,8 @@
-localhost   ansible_connection=local
+# Ansible inventory file for local Raspberry Pi configuration
+# For local configuration, we only use localhost
+localhost ansible_connection=local
+
+# Alternative configurations:
+# For remote Raspberry Pi configuration, you could use:
+# raspberrypi.local ansible_host=192.168.1.100 ansible_user=pi
+# rpi-cluster-[01:04] ansible_user=pi

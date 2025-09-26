@@ -1,0 +1,33 @@
+---
+- name: Validate Raspberry Pi Configuration
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  tasks:
+    - name: Check if running on Raspberry Pi
+      assert:
+        that:
+          - ansible_architecture in ['armv6l', 'armv7l', 'aarch64']
+        fail_msg: "This playbook is designed to run on Raspberry Pi (ARM architecture)"
+        success_msg: "Running on supported architecture: {{ ansible_architecture }}"
+
+    - name: Check if raspi-config is available
+      command: which raspi-config
+      register: raspi_config_check
+      failed_when: false
+      changed_when: false
+
+    - name: Warn if raspi-config not found
+      debug:
+        msg: "Warning: raspi-config not found. Some features may not work properly."
+      when: raspi_config_check.rc != 0
+
+    - name: Display system information
+      debug:
+        msg: |
+          System: {{ ansible_system }}
+          Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Architecture: {{ ansible_architecture }}
+          Hostname: {{ ansible_hostname }}
+          Default IPv4: {{ ansible_default_ipv4.address | default('Not configured') }}
+          MAC Address: {{ ansible_default_ipv4.macaddress | default('Not available') }}

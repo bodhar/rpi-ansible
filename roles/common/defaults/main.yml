@@ -1,0 +1,30 @@
+---
+# Default configuration values
+macaddrs: {}
+create_users: []
+
+# Default packages to remove (bloatware)
+raspbian_bloat_packages:
+  - wolfram-engine
+  - libreoffice*
+  - scratch
+  - minecraft-pi
+  - python-minecraftpi 
+  - python3-minecraftpi
+  - sonic-pi
+  - dillo
+  - gpicview
+  - penguinspuzzle
+
+# Default essential packages to install
+essential_packages:
+  - vim
+  - git
+  - python3-pip
+  - ufw
+
+# Default darshan development packages
+darshan_dev_packages:
+  - mpich
+  - zlib1g-dev
+  - autoconf
