@@ -1,197 +1,173 @@
 ---
-- name: get Raspberry Pi model type
+- name: Get Raspberry Pi model type
   shell: "raspi-config nonint get_pi_type"
   register: raspi_type
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get hostname via raspi-config
+- name: Get hostname via raspi-config
   shell: "raspi-config nonint get_hostname"
   register: raspi_hostname
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get boot-to-gui setting 
+- name: Get boot-to-gui setting 
   shell: "raspi-config nonint get_boot_cli" # 0 == "boot to cli"; 1 == "boot to gui"
   register: raspi_boot_gui
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get autologin setting
+- name: Get autologin setting
   shell: "raspi-config nonint get_autologin" # 0 == "enable autologin"; 1 == "disable autologin"
   register: raspi_noautologin
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get wait-for-network-on-boot setting 
+- name: Get wait-for-network-on-boot setting 
   shell: "raspi-config nonint get_boot_wait" # 0 == "wait"; 1 == "don't wait"
   register: raspi_boot_nowait
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get splash screen setting 
+- name: Get splash screen setting 
   shell: "raspi-config nonint get_boot_splash" # 0 == "wait"; 1 == "don't wait"
   register: raspi_boot_splash
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get wifi country
+- name: Get wifi country
   shell: "raspi-config nonint get_wifi_country"
   register: raspi_wifi_country
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get camera status
+- name: Get camera status
   shell: "raspi-config nonint get_camera" # 0 == "camera enabled"; 1 == "camera disabled"
   register: raspi_camera_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get ssh enabled status
+- name: Get ssh enabled status
   shell: "raspi-config nonint get_ssh"
   register: raspi_ssh_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get VNC enabled status
+- name: Get VNC enabled status
   shell: "raspi-config nonint get_vnc"
   register: raspi_vnc_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get SPI enabled status
+- name: Get SPI enabled status
   shell: "raspi-config nonint get_spi"
   register: raspi_spi_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get I2C enabled status
+- name: Get I2C enabled status
   shell: "raspi-config nonint get_i2c"
   register: raspi_i2c_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get serial enabled status
+- name: Get serial enabled status
   shell: "raspi-config nonint get_serial"
   register: raspi_serial_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get hardware serial enabled status
+- name: Get hardware serial enabled status
   shell: "raspi-config nonint get_serial_hw"
   register: raspi_serial_hw_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get onewire enabled status
+- name: Get onewire enabled status
   shell: "raspi-config nonint get_onewire"
   register: raspi_onewire_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get remote gpio enabled status
+- name: Get remote gpio enabled status
   shell: "raspi-config nonint get_rgpio"
   register: raspi_rgpio_disabled
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get overclock state 
+- name: Get overclock state 
   shell: "raspi-config nonint get_config_var arm_freq /boot/config.txt"
   register: raspi_overclock
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get fs expandability
+- name: Get fs expandability
   shell: "raspi-config nonint get_can_expand"
   register: raspi_fs_unexpandable
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get overscan setting
+- name: Get overscan setting
   shell: "raspi-config nonint get_overscan"
   register: raspi_overscan
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get GPU memory split
+- name: Get GPU memory split
   shell: "raspi-config nonint get_config_var gpu_mem /boot/config.txt"
   register: raspi_gpu_mem
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get GPU memory split 256
+- name: Get GPU memory split 256
   shell: "raspi-config nonint get_config_var gpu_mem_256 /boot/config.txt"
   register: raspi_gpu_mem_256
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get GPU memory split 512
+- name: Get GPU memory split 512
   shell: "raspi-config nonint get_config_var gpu_mem_512 /boot/config.txt"
   register: raspi_gpu_mem_512
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: get GPU memory split 1024
+- name: Get GPU memory split 1024
   shell: "raspi-config nonint get_config_var gpu_mem_1024 /boot/config.txt"
   register: raspi_gpu_mem_1024
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: determine last allocated disk sector
+- name: Determine last allocated disk sector
   shell: "parted /dev/mmcblk0 -ms unit s p | tail -n1 | awk -F':' '{ print $3 + 0 }'"
   register: raspi_last_alloced_sector
-  changed_when: False
-  check_mode: no
-  tags:
-    - raspi
+  changed_when: false
+  check_mode: false
+  tags: ['facts', 'raspi']
 
-- name: set raspi-config facts
+- name: Set raspi-config facts
   set_fact:
     raspi_type: "{{ raspi_type.stdout }}"
     raspi_hostname: "{{ raspi_hostname.stdout }}"
@@ -216,6 +192,5 @@
     raspi_gpu_mem_256: "{{ raspi_gpu_mem_256.stdout }}"
     raspi_gpu_mem_512: "{{ raspi_gpu_mem_512.stdout }}"
     raspi_gpu_mem_1024: "{{ raspi_gpu_mem_1024.stdout }}"
-  check_mode: no
-  tags:
-    - raspi
+  check_mode: false
+  tags: ['facts', 'raspi']

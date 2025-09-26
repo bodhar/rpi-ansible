@@ -1,25 +1,29 @@
 ---
-- name: get timezone via timedatectl
+- name: Get timezone via timedatectl
   shell: "timedatectl | grep 'Time zone' | cut -d':' -f2 | cut -d'(' -f1 | sed -Ee 's/(^ *| *$)//g'"
   register: linux_tz
-  changed_when: False
-  check_mode: no
+  changed_when: false
+  check_mode: false
+  tags: ['facts']
 
-- name: get locale
+- name: Get locale
   shell: "locale | grep ^LANG | cut -d= -f2"
   register: linux_locale
-  changed_when: False
-  check_mode: no
+  changed_when: false
+  check_mode: false
+  tags: ['facts']
 
-- name: get x keyboard layout
+- name: Get X keyboard layout
   shell: "localectl | awk '/X11 Layout/ {print $3}'"
   register: linux_xkblayout
-  changed_when: False
-  check_mode: no
+  changed_when: false
+  check_mode: false
+  tags: ['facts']
 
-- name: set linux-config facts
+- name: Set linux-config facts
   set_fact:
     linux_tz: "{{ linux_tz.stdout }}"
     linux_locale: "{{ linux_locale.stdout }}"
     linux_xkblayout: "{{ linux_xkblayout.stdout }}"
-  check_mode: no
+  check_mode: false
+  tags: ['facts']

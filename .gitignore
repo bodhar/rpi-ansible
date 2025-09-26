@@ -1,1 +1,27 @@
+# Ansible specific
 local.retry
+*.retry
+.ansible/
+
+# Fact cache
+/tmp/ansible_facts_cache
+
+# Logs
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Editor specific
+*~
+.*.swp
+.*.swo
+*.tmp
+
+# Vagrant
+.vagrant/
+
+# Testing
+tests/test.sh
+.tox/

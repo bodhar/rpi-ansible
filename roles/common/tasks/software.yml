@@ -1,45 +1,28 @@
 ---
-
 # Uninstall Raspbian bloat
-- name: remove raspbian bloat
+- name: Remove raspbian bloat
   apt:
-    name="{{ packages }}"
-    state=absent
-  vars:
-    packages:
-      - wolfram-engine
-      - libreoffice*
-      - scratch
-      - minecraft-pi
-      - python-minecraftpi 
-      - python3-minecraftpi
-      - sonic-pi
-      - dillo
-      - gpicview
-      - penguinspuzzle
-  tags:
-    - sw
+    name: "{{ raspbian_bloat_packages }}"
+    state: absent
+    autoremove: true
+  tags: ['software', 'cleanup']
 
 # Install required software
-- name: install basic software environment
+- name: Update apt cache
   apt:
-    name="{{ packages }}"
-    state=present
-    update_cache=yes
-  vars:
-    packages:
-      - vim
-      - git
-      - python-pip
-      - ufw
-  tags:
-    - sw
+    update_cache: true
+    cache_valid_time: 3600
+  tags: ['software']
 
-- name: install additional software
+- name: Install basic software environment
   apt:
-    name="{{ myconfig.extra_software }}"
-    state=present
-    update_cache=yes
-  when: "'extra_software' in myconfig"
-  tags:
-    - sw
+    name: "{{ essential_packages }}"
+    state: present
+  tags: ['software']
+
+- name: Install additional software
+  apt:
+    name: "{{ myconfig.extra_software }}"
+    state: present
+  when: "'extra_software' in myconfig and myconfig.extra_software is defined"
+  tags: ['software']

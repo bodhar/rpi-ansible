@@ -1,0 +1,17 @@
+---
+- name: Restart SSH service
+  service:
+    name: ssh
+    state: restarted
+  listen: "restart ssh"
+
+- name: Reboot system
+  reboot:
+    reboot_timeout: 300
+    test_command: uptime
+  listen: "reboot system"
+
+- name: Reload UFW
+  ufw:
+    state: reloaded
+  listen: "reload ufw"

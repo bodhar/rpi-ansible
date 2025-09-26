@@ -1,134 +1,159 @@
 ---
 
 # Gather facts specific to the Raspberry Pi platform
-- include: raspi-facts.yml
-- include: linux-facts.yml
+- name: Include Raspberry Pi facts
+  import_tasks: raspi-facts.yml
+  tags: ['raspi', 'facts']
+
+- name: Include Linux facts
+  import_tasks: linux-facts.yml
+  tags: ['linux', 'facts']
 
 # Basic hostname setup
 - name: Get MAC address
   debug: 
-    msg: "{{ hostvars[inventory_hostname].ansible_default_ipv4.macaddress }}"
-  tags:
-    - raspi
-    - sw
+    msg: "{{ hostvars[inventory_hostname].ansible_default_ipv4.macaddress | default('No default interface found') }}"
+  tags: ['raspi', 'sw']
 
-- name: store MAC address
+- name: Store MAC address
   set_fact:
     my_macaddr: "{{ hostvars[inventory_hostname].ansible_default_ipv4.macaddress }}"
-  tags:
-    - raspi
-    - sw
+  when: hostvars[inventory_hostname].ansible_default_ipv4 is defined
+  tags: ['raspi', 'sw']
 
-- name: store system configuration
+- name: Fail if no default network interface found
+  fail:
+    msg: "No default network interface found. Cannot determine MAC address."
+  when: hostvars[inventory_hostname].ansible_default_ipv4 is not defined
+  tags: ['validation']
+
+- name: Store system configuration
   set_fact:
     myconfig: "{{ macaddrs[my_macaddr] }}"
-  tags:
-    - raspi
-    - sw
+  tags: ['raspi', 'sw']
 
-- name: set hostname
+# Ensure MAC address exists in configuration
+- name: Fail if MAC address not found in configuration
+  fail:
+    msg: "MAC address {{ my_macaddr }} not found in macaddrs configuration"
+  when: my_macaddr not in macaddrs
+  tags: ['validation']
+
+- name: Set hostname
   shell: "raspi-config nonint do_hostname {{ myconfig.hostname }}"
   when: raspi_hostname != myconfig.hostname
+  notify: "reboot system"
+  tags: ['hostname']
 
-- name: update /etc/hosts with new hostname
+- name: Update /etc/hosts with new hostname
   lineinfile:
-    dest=/etc/hosts
-    regexp="^{{ ansible_default_ipv4.address }}"
-    line="{{ ansible_default_ipv4.address }}{{'\t'}}{{ myconfig.hostname }}.{{ myconfig.domain }}{{'\t'}}{{ myconfig.hostname }}"
-    state=present
+    dest: /etc/hosts
+    regexp: "^{{ ansible_default_ipv4.address }}"
+    line: "{{ ansible_default_ipv4.address }}\t{{ myconfig.hostname }}.{{ myconfig.domain }}\t{{ myconfig.hostname }}"
+    state: present
+  tags: ['hostname']
 
-- name: get rid of default 127.0.1.1 binding
+- name: Remove default 127.0.1.1 binding
   lineinfile:
-    dest=/etc/hosts
-    regexp="^127.0.1.1"
-    state=absent
+    dest: /etc/hosts
+    regexp: "^127.0.1.1"
+    state: absent
+  tags: ['hostname']
 
 # Set timezone
-- name: set timezone
+- name: Set timezone
   command: "timedatectl set-timezone {{ myconfig.timezone }}"
   when: linux_tz != myconfig.timezone
+  tags: ['timezone']
 
 # Set locale
-- name: set locale
+- name: Set locale
   command: "raspi-config nonint do_change_locale {{ myconfig.locale }}"
   when: "'locale' in myconfig and linux_locale != myconfig.locale"
+  tags: ['locale']
 
 # Set X keyboard layout
-- name: set X11 keyboard layout
+- name: Set X11 keyboard layout
   command: "raspi-config nonint do_configure_keyboard {{ myconfig.xkblayout }}"
   when: "'xkblayout' in myconfig and myconfig.xkblayout != linux_xkblayout"
+  tags: ['keyboard']
 
 # Set wifi country
-- name: set wifi country
-  command: "raspiconfig nonint do_wifi_country {{ myconfig.wifi_country }}"
+- name: Set wifi country
+  command: "raspi-config nonint do_wifi_country {{ myconfig.wifi_country }}"
   when: "'wifi_country' in myconfig and myconfig.wifi_country != raspi_wifi_country"
+  tags: ['wifi']
 
 # Enable sshd
-- name: disable ssh login for user pi
+- name: Disable ssh login for user pi
   lineinfile:
-    dest=/etc/ssh/sshd_config
-    line="DenyUsers pi"
-    state=present
-  tags:
-    - raspi
+    dest: /etc/ssh/sshd_config
+    line: "DenyUsers pi"
+    state: present
+  notify: "restart ssh"
+  tags: ['ssh', 'security']
 
-- name: enable SSH via raspi-config
+- name: Enable SSH via raspi-config
   shell: "raspi-config nonint do_ssh 0"
   when: not raspi_ssh_enabled
-  tags:
-    - raspi
+  tags: ['ssh']
 
 # Other tasks
-- include: software.yml
-- include: users.yml
-- include: raspi-config.yml
-- include: darshan-dev.yml
+- name: Include software configuration
+  import_tasks: software.yml
+  tags: ['software']
+
+- name: Include user configuration
+  import_tasks: users.yml
+  tags: ['users']
+
+- name: Include raspi-config settings
+  import_tasks: raspi-config.yml
+  tags: ['raspi-config']
+
+- name: Include darshan-dev configuration
+  include_tasks: darshan-dev.yml
   when: "'darshan_dev' in myconfig and myconfig.darshan_dev"
+  tags: ['darshan-dev']
 
 # Configure firewall
-- name: allow SSH through UFW
+- name: Allow SSH through UFW
   ufw:
     rule: allow
     port: ssh
     proto: tcp
-    log: yes
-  tags:
-    - ufw
+    log: true
+  tags: ['firewall']
 
-- name: allow mDNS through UFW
+- name: Allow mDNS through UFW
   ufw:
     rule: allow
     to_ip: 224.0.0.251
     proto: igmp
-    log: no
-  tags:
-    - ufw
+    log: false
+  tags: ['firewall']
 
-- name: drop multicast without logging
+- name: Drop multicast without logging
   ufw:
     rule: deny
     to_ip: 224.0.0.1
-    log: no
-  tags:
-    - ufw
+    log: false
+  tags: ['firewall']
 
-- name: set default incoming UFW policy to deny
+- name: Set default incoming UFW policy to deny
   ufw:
     direction: incoming
     policy: deny
-  tags:
-    - ufw
+  tags: ['firewall']
 
-- name: set default outgoing UFW policy to allow
+- name: Set default outgoing UFW policy to allow
   ufw:
     direction: outgoing
     policy: allow
-  tags:
-    - ufw
+  tags: ['firewall']
 
-- name: enable UFW
+- name: Enable UFW
   ufw:
     state: enabled
-    logging: yes
-  tags:
-    - ufw
+    logging: true
+  tags: ['firewall']
