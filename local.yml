@@ -1,7 +1,8 @@
 ---
 - name: Raspberry Pi self configuration
   hosts: localhost
-  user: root
+  become: true
   connection: local
+  gather_facts: true
   roles:
     - common

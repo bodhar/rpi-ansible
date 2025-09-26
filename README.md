@@ -1,32 +1,86 @@
 # Raspberry Pi Ansible
 
-Glenn K. Lockwood, October 2018
+Glenn K. Lockwood, October 2018  
+Updated for modern Ansible best practices
 
 ## Introduction
 
-This is an Ansible configuration that configures a fresh Raspbian installation
-on Raspberry Pi.  It is intended to be run in local (pull) mode, where ansible
+This is an Ansible configuration that configures a fresh Raspberry Pi OS installation
+on Raspberry Pi. It is intended to be run in local (pull) mode, where ansible
 is running on the same Raspberry Pi to be configured.
 
-## Bootstrapping on Raspbian
+## Bootstrapping on Raspberry Pi OS
 
-You will need ansible installed on the Raspberry Pi being configured.  This
-playbook relies on Ansible 2.8 or newer, which means you can no longer use
-`sudo apt-get install ansible`.  Instead, you must
+You will need Ansible installed on the Raspberry Pi being configured. This
+playbook requires Ansible 2.9 or newer. 
 
-    $ sudo pip install ansible
+### Modern Installation Method (Recommended)
+
+Install using pip3 and collections:
+
+```bash
+# Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Install Python 3 and pip
+sudo apt install -y python3-pip git
+
+# Install Ansible
+pip3 install --user ansible
+
+# Add pip user bin to PATH if not already present
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Install required Ansible collections
+ansible-galaxy collection install -r requirements.yml
+```
+
+### Alternative Installation Methods
+
+#### Using pipx (preferred for isolation)
+```bash
+sudo apt install -y python3-pip git pipx
+pipx install ansible-core
+pipx inject ansible-core ansible
+ansible-galaxy collection install -r requirements.yml
+```
+
+#### Using system packages (may be outdated)
+```bash
+sudo apt install -y ansible git
+# Note: This may install an older version of Ansible
+```
 
 ## Configuration
 
 The `macaddrs` structure in _roles/common/vars/main.yml_ maps the MAC address of
-a Raspberry Pi to its intended configuration state.  Add your Raspberry Pi's MAC
+a Raspberry Pi to its intended configuration state. Add your Raspberry Pi's MAC
 address to that structure and set its configuration accordingly.
 
 ## Running the playbook
 
 Then run the playbook:
 
-    $ sudo ansible-playbook local.yml 
+```bash
+sudo ansible-playbook local.yml
+```
+
+You can also run specific parts using tags:
+
+```bash
+# Run only software installation
+sudo ansible-playbook local.yml --tags software
+
+# Run only user configuration  
+sudo ansible-playbook local.yml --tags users
+
+# Run only firewall configuration
+sudo ansible-playbook local.yml --tags firewall
+
+# Skip firewall configuration
+sudo ansible-playbook local.yml --skip-tags firewall
+```
 
 The playbook will self-discover its settings, then idempotently configure the
 Raspberry Pi.

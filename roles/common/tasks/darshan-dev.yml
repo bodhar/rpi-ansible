@@ -1,12 +1,12 @@
 ---
-- name: install prerequisite software for Darshan development
+- name: Install prerequisite software for Darshan development
   apt:
-    name="{{ item }}"
-    state=present
-    update_cache=yes
-  with_items:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  loop:
     - mpich
     - zlib1g-dev
     - autoconf
-  tags:
-    - sw
+  tags: ['software', 'darshan-dev']

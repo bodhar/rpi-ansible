@@ -1,10 +1,10 @@
 ---
-
 # Uninstall Raspbian bloat
-- name: remove raspbian bloat
+- name: Remove raspbian bloat
   apt:
-    name="{{ packages }}"
-    state=absent
+    name: "{{ packages }}"
+    state: absent
+    autoremove: true
   vars:
     packages:
       - wolfram-engine
@@ -17,29 +17,30 @@
       - dillo
       - gpicview
       - penguinspuzzle
-  tags:
-    - sw
+  tags: ['software', 'cleanup']
 
 # Install required software
-- name: install basic software environment
+- name: Update apt cache
   apt:
-    name="{{ packages }}"
-    state=present
-    update_cache=yes
+    update_cache: true
+    cache_valid_time: 3600
+  tags: ['software']
+
+- name: Install basic software environment
+  apt:
+    name: "{{ packages }}"
+    state: present
   vars:
     packages:
       - vim
       - git
-      - python-pip
+      - python3-pip
       - ufw
-  tags:
-    - sw
+  tags: ['software']
 
-- name: install additional software
+- name: Install additional software
   apt:
-    name="{{ myconfig.extra_software }}"
-    state=present
-    update_cache=yes
-  when: "'extra_software' in myconfig"
-  tags:
-    - sw
+    name: "{{ myconfig.extra_software }}"
+    state: present
+  when: "'extra_software' in myconfig and myconfig.extra_software is defined"
+  tags: ['software']
