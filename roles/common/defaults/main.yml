@@ -20,7 +20,7 @@ raspbian_bloat_packages:
 essential_packages:
   - vim
   - git
-  - python3-pip
+  - curl
   - ufw
 
 # Default darshan development packages

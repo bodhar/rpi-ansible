@@ -16,21 +16,21 @@ playbook requires Ansible 2.9 or newer.
 
 ### Modern Installation Method (Recommended)
 
-Install using pip3 and collections:
+Install using uv (fast Python package manager):
 
 ```bash
 # Update system packages
 sudo apt update && sudo apt upgrade -y
 
-# Install Python 3 and pip
-sudo apt install -y python3-pip git
+# Install Python 3 and curl
+sudo apt install -y python3 git curl
+
+# Install uv (fast Python package manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
 
 # Install Ansible
-pip3 install --user ansible
-
-# Add pip user bin to PATH if not already present
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+uv tool install ansible
 
 # Install required Ansible collections
 ansible-galaxy collection install -r requirements.yml
@@ -38,11 +38,14 @@ ansible-galaxy collection install -r requirements.yml
 
 ### Alternative Installation Methods
 
-#### Using pipx (preferred for isolation)
+#### Using uv with virtual environment (alternative approach)
 ```bash
-sudo apt install -y python3-pip git pipx
-pipx install ansible-core
-pipx inject ansible-core ansible
+sudo apt install -y python3 git curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source ~/.bashrc
+uv venv ansible-env
+source ansible-env/bin/activate
+uv pip install ansible
 ansible-galaxy collection install -r requirements.yml
 ```
 
